@@ -1,0 +1,50 @@
+# seed: 42
+# task_type: bert4rankloss
+
+dataset:
+  train_data_path: ['/workspace/ye/RM/data/hh-ultra-feedback-32b-labled-1.58w.json']
+  val_data_path: ['/workspace/ye/RM/data/hh-rlhf-helpful-en-test.json','/workspace/ye/RM/data/hh-ultra-valid.json']
+  test_data_path: ['/workspace/ye/RM/data/hh-rlhf-train.json']
+  max_src_len: 512
+  max_seq_len: 1280
+  infer_result: '/workspace/ye/RM/infer_result'
+
+model:
+  model_type: 'chatglm'
+  offload: false
+  model_path: /workspace/ye/llm/chatglm3-6b-base
+  principle_path: /workspace/ye/AI_FeedBack/GLM-turbo/prompts/custom_define_prompt/helpful_principle_cn_102.json
+
+train:
+  gradient_accumulation_steps: 1
+  learning_rate: 5e-7
+  lr_scheduler_type: cosine
+  per_device_eval_batch_size: 1
+  per_device_train_batch_size: 1
+  num_warmup_steps: 100
+  weight_decay: 0.1
+  num_train_epochs: 1
+  Dropout: 0.1
+  save_path: /tmp/checkpoint
+  scheduler: CAWR
+  T_mult: 1
+  rewarm_epoch_num: 1
+  decay_rate: 0.999
+  decay_steps: 200
+  
+deepspeed:
+  offload: false
+  zero_stage: 2
+
+log:
+  checkpoint_save_interval: 10000
+  eval_epoch_ratio: 0.1
+  eval_interval: -1
+  project_name: 'RM'
+  run_name: '131-ultrafeedback-AI-labeled-1.58w-data'
+  output_dir: /tmp/checkpoint
+
+evaluator:
+  data_path: ''
+  checkpoint_path: '/workspace/ye/AI_FeedBack/RM/checkpoint/chatglm/116-hh-ultra-6w/epoch0-eval-loss-1.11.pth'
+  result_save_path: ''
